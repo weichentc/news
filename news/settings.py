@@ -31,13 +31,19 @@ MONGODB_DBNAME = 'news'
 MONGODB_DOCNAME = 'news1'
 LOG_FILE = "mySpider.log"
 LOG_LEVEL = "ERROR"
+
+
+DOWNLOAD_DELAY = 0  #设置时间间隔为1s，防止被禁
+DOWNLOAD_TIMEOUT = 4 #设置超时时间
+RETRY_ENABLED = False#设置开启重试
+# RETRY_TIMES = 3 #设置重试次数
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 48
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 0
+# DOWNLOAD_DELAY = 0
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -64,7 +70,7 @@ COOKIES_ENABLED = False
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
    # 'news.middlewares.MyCustomDownloaderMiddleware': 543,
-   'news.middlewares.ProxyMiddleware': 200,
+   # 'news.middlewares.ProxyMiddleware': 200,
    'news.middlewares.CheckurlMiddleware': 100,
 }
 

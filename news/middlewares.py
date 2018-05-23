@@ -12,7 +12,7 @@ import redis
 from scrapy.conf import settings
 from scrapy.exceptions import IgnoreRequest
 import pymongo
-
+import time
 redis_db = redis.Redis(host='127.0.0.1', port=6379, db=4) #连接redis，相当于MySQL的conn
 redis_data_dict = "url_news"  #key的名字，写什么都可以，这里的key相当于字典名称，而不是key值。
 # redis_data_now_dict = 'url_now'
@@ -67,13 +67,19 @@ class NewsSpiderMiddleware(object):
 class ProxyMiddleware(object):
     # overwrite process request
     def process_request(self, request, spider):
+        # print(time.strftime('%H:%M:%S'))
         proxy_config = get_proxy(keep_ip=False)['proxy']
+        # kwargs['proxies'] = {'http': 'http://%(user)d:%(pwd)s@%(proxy)s' % proxy_config,
+        # print(proxy_config)
+        # print(time.strftime('%H:%M:%S'))
         # print('proxy_config: ',proxy_config)
         # request.meta['proxies'] = {'http': 'http://%(user)d:%(pwd)s@%(proxy)s' % proxy_config,
         #                      'https': 'https://%(user)d:%(pwd)s@%(proxy)s' % proxy_config}
         # 设置代理的主机和端口号
         # request.meta['proxy'] = 'http://%s:%d/get-proxy-api' % ('118.190.114.196',8080)
-        request.meta['proxy'] = 'http://%s' % proxy_config
+        # print('proxy_config: ',proxy_config)
+        if proxy_config:
+            request.meta['proxy'] = 'http://%s' % proxy_config
 
 class CheckurlMiddleware(object):
 

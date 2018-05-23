@@ -37,7 +37,7 @@ class NewsPipeline(object):
         #     raise DropItem("Dupliicate item found: %s" % item)
         book_info = dict(item)
         self.post.insert(book_info)
-        print('item[url]: ',item['url'])
+        # print('item[url]: ',item['url'])
         # redis_db.hset(redis_data_now_dict,item['url'],0)
         # print('url_to_mongo: ',item['url'])
         # self.urls_now.add(item['url'])

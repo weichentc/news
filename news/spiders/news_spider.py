@@ -28,8 +28,9 @@ class NewsSpider(scrapy.Spider):
     # allowed_domains = ['eastmoney.com']
 
     start_urls = [
-        # "http://news.baidu.com/",
-        'https://www.baidu.com/search/resources.html'
+        "http://news.baidu.com/",
+
+        # 'https://www.baidu.com/search/resources.html'
         # "http://www.dmoz.org/Computers/Programming/Languages/Python/Resources/"
     ]
 
@@ -40,38 +41,44 @@ class NewsSpider(scrapy.Spider):
         self.list_url_useless = ['#','/','javascript:','null','javascript:void(0)','#1','javascript:void(0);','javascript:;']
 
     def parse(self, response):
-        hxs = HtmlXPathSelector(response)
+        # hxs = HtmlXPathSelector(response)
         # newurls = hxs.select('//a/@href').extract()
-        newurls = response.xpath('//a/@href').extract()
-        print('url_now: ',response.url)
-        # print('len_urls:',len(newurls))
-        list_part = response.url.split('/')
-        if list_part[-1] == '':
-            list_part = list_part[:-1]
-        # if len(list_part) > 4 and (len(list_part[-1]) >10):
-        if response.url.endswith('.html') and self.hasNumbers(list_part[-1]):
-            filename = hashlib.md5(response.url.encode('utf-8')).hexdigest()+ '.txt'
-            # print('filename: ',filename)
-            last_update_time = time.strftime("%Y-%m-%d %H:%M:%S")
-            item = NewsItem()
-            item['url'] = response.url
-            item['contents'] = response.body
-            item['filename'] = filename
-            item['last_update_time'] = last_update_time
-            yield item
+        try:
+            newurls = response.xpath('//a/@href').extract()
+            # print('url_now: ',response.url)
+            # print('len_urls:',len(newurls))
+            list_part = response.url.split('/')
+            if list_part[-1] == '':
+                list_part = list_part[:-1]
+            # if len(list_part) > 4 and (len(list_part[-1]) >10):
+            # if response.url.endswith('.html') and self.hasNumbers(list_part[-1]):
+            if (response.url.endswith('html') or response.url.endswith('htm')) \
+                    and len(list_part) > 4 and self.hasNumbers(list_part[-1]):
+                filename = hashlib.md5(response.url.encode('utf-8')).hexdigest()+ '.txt'
+                # print('filename: ',filename)
+                last_update_time = time.strftime("%Y-%m-%d %H:%M:%S")
+                item = NewsItem()
+                item['url'] = response.url
+                item['contents'] = response.body
+                item['filename'] = filename
+                item['last_update_time'] = last_update_time
+                yield item
 
 
-        for url in newurls:
-            if url in self.list_url_useless:
-                continue
-            if url.startswith('//'):
-                url = 'http://' + url
-            elif 'http' not in url:
-                # print('url1: ',url)
-                url = 'http://' + response.url.split('/')[2] + url
-            if response.url.endswith('.html') and len(list_part) > 5:
-                continue
-            yield scrapy.Request(url,callback=self.parse,dont_filter=False)
+            for url in newurls:
+                if url in self.list_url_useless:
+                    continue
+                if url.startswith('//'):
+                    url = 'http://' + url
+                elif 'http' not in url:
+                    # print('url1: ',url)
+                    url = 'http://' + response.url.split('/')[2] + url
+                # if response.url.endswith('.html') and len(list_part) > 5:
+                #     continue
+                yield scrapy.Request(url,callback=self.parse,dont_filter=False)
+        except Exception as e:
+            print(e)
+            pass
 
             # # print('item: ',item)
             # # with open('./contents/' +filename, 'wb') as f:

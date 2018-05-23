@@ -22,30 +22,30 @@ headers = {
     'Upgrade-Insecure-Requests': '1',
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:45.0) Gecko/20100101 Firefox/45.0',
 }
-expected_ip = None
+expected_ip = {}
 # class Proxy():
 #     def __init__(self):
 #         self.expect_ip =
 def get_proxy(keep_ip=False):
     global  expected_ip
     # print('expected_ip: ',expected_ip)
-    while True:
+    try:
         url = 'http://%s:%d/get-proxy-api' % (manager_host, manager_port)
         params = {'order': '5fe6cf97-5592-11e7-be16-f45c89a63279'}
+        # print('expected_ip:',expected_ip)
         if keep_ip:
-            params['expected_ip'] = expected_ip
+            if expected_ip:
+                return  expected_ip
         res = requests.get(url, params=params)
         # print res.text
         if res.status_code == 200 and res.text != '{}':
             json_obj = json.loads(res.text)
-            # print(json_obj)
-            # if keep_ip:
-            #     expected_ip = json_obj['proxy'].split(':')[0]
+            # print(json_obj['proxy'])
+            if keep_ip:
+                expected_ip['proxy'] = json_obj['proxy'].split(':')[0]
             return json_obj
-        else:
-            time.sleep(1)
-            print('暂无可用代理')
-
+    except:
+        return None
 def get_request(url, session = None,headers=None,keep_ip=False,**kwargs):
     global expected_ip
     for t in range(3):
