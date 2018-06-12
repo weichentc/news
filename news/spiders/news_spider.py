@@ -23,7 +23,7 @@ class NewsSpider(scrapy.Spider):
         url_list.append(url)
     url_list.append('news.baidu.com')
     name = "news"
-    allowed_domains = url_list
+    allowed_domains =  url_list
     # print(allowed_domains)
     # allowed_domains = ['eastmoney.com']
 
